@@ -1,0 +1,25 @@
+ScreenManager:
+    BattleField:
+        id: battlefield
+
+<BattleField>:
+    MDBoxLayout:
+        orientation: "vertical"
+        Grid:
+            md_bg_color: app.theme_cls.primary_color
+        Grid:
+            draw_ships: True
+
+<CellHeader>:
+    halign: "center"
+    canvas.before:
+        Color:
+            rgb: 0, 0, 0
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgb: app.theme_cls.primary_color
+        Rectangle:
+            pos: self.x + self.line_thickness, self.y + self.line_thickness
+            size: self.width - self.line_thickness*2, self.height - self.line_thickness*2
