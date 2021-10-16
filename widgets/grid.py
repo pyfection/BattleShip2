@@ -64,12 +64,19 @@ class Grid(MDGridLayout):
                 cell = Cell(on_press=self.cell_click, coords=(x, y))
                 self.add_widget(cell)
 
+    def on_pos(self, _, pos):
+        if not self.is_enemy_grid:
+            self.draw_ships()
+
     def on_ships(self, _, ships):
         if not self.is_enemy_grid:
             self.draw_ships()
 
     def coords_to_pos(self, x, y):
-        return (x+1)*self.cell_size+self.cell_size*.5, (self.dimensions[1]-y-1)*self.cell_size+self.cell_size*.5
+        return (
+            self.x+(x+1)*self.cell_size+self.cell_size*.5,
+            self.y+(self.dimensions[1]-y-1)*self.cell_size+self.cell_size*.5
+        )
 
     def cell_click(self, cell):
         if self.is_enemy_grid:
