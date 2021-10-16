@@ -19,3 +19,8 @@ class BattleField(MDScreen):
     def start_singleplayer(self, ships):
         self.enemy_grid.randomly_place_ships()
         self.player_grid.ships = ships
+
+    def ai_turn(self):
+        while True:
+            if self.player_grid.hit_cell(self.ai.make_turn()) is False:  # Hit empty field
+                break

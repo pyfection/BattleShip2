@@ -78,16 +78,19 @@ class Grid(MDGridLayout):
         cell = self.cells[tuple(cell_coords)]
         if cell.tested:
             print('Cell already tested')
-            return False
+            return None
         cell.tested = True
         ships = [ship for sublist in self.ships for ship in sublist]
         with self.canvas.after:
             if tuple(cell.coords) in ships:
+                hit = True
                 Color(rgb=(1, 0, 0))
             else:
+                hit = False
                 Color(rgb=(0, 0, 1))
             Line(points=(*cell.pos, cell.right, cell.top), width=2)
             Line(points=(cell.x, cell.top, cell.right, cell.y), width=2)
+            return hit
 
     def randomly_place_ships(self):
         ships = []
@@ -155,8 +158,8 @@ class EnemyGrid(Grid):
 
     def cell_click(self, cell):
         if not self.blocked:
-            self.hit_cell(cell.coords)
-            self.blocked = True
+            if self.hit_cell(cell.coords) is False:  # Hit empty cell
+                self.blocked = True
 
 
 class CellHeader(MDLabel):
