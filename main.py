@@ -9,7 +9,9 @@ Factory.register('BattleField', module='screens.battlefield')
 
 
 class BattleShip(App):
-    pass
+    def start_battle(self, ships):
+        self.root.current = 'battlefield'
+        self.root.battlefield.start_singleplayer(ships)
 
 
 if __name__ == '__main__':

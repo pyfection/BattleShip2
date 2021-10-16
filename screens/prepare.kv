@@ -3,6 +3,17 @@
 
     MDBoxLayout:
         orientation: "vertical"
-        PrepareGrid:
-            id: grid
-            allowed_ships: root.allowed_ships
+
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'center'
+            PrepareGrid:
+                id: grid
+                allowed_ships: root.allowed_ships
+
+        MDBoxLayout:
+            adaptive_height: True
+            Widget:
+            MDRaisedButton:
+                text: "Start"
+                on_press: app.start_battle(grid.ships)

@@ -3,7 +3,6 @@ from kivy.properties import ListProperty
 from kivy.clock import Clock
 from kivymd.uix.screen import MDScreen
 
-
 Builder.load_file('screens/prepare.kv')
 
 
