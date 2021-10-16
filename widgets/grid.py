@@ -28,8 +28,6 @@ Builder.load_string("""
 
 class Grid(MDGridLayout):
     allowed_ships = ListProperty()
-    is_enemy_grid = BooleanProperty(False)
-    has_turn = BooleanProperty(False)
     dimensions = ListProperty((10, 10))
     cell_size = NumericProperty(dp(30))
     ships = ListProperty()
@@ -41,6 +39,7 @@ class Grid(MDGridLayout):
         self.row_force_default = True
         self.col_default_width = self.cell_size
         self.row_default_height = self.cell_size
+        self.cells = {}
         if 'dimensions' not in kwargs:
             self._create()
 
@@ -63,15 +62,8 @@ class Grid(MDGridLayout):
             self.add_widget(label)
             for x in range(w):
                 cell = Cell(on_press=self.cell_click, coords=(x, y))
+                self.cells[(x, y)] = cell
                 self.add_widget(cell)
-
-    def on_pos(self, _, pos):
-        if not self.is_enemy_grid:
-            self.draw_ships()
-
-    def on_ships(self, _, ships):
-        if not self.is_enemy_grid:
-            self.draw_ships()
 
     def coords_to_pos(self, x, y):
         return (
@@ -80,14 +72,13 @@ class Grid(MDGridLayout):
         )
 
     def cell_click(self, cell):
-        if not self.has_turn and self.is_enemy_grid:
-            self.hit_cell(cell)
-            self.has_turn = True
+        pass
 
-    def hit_cell(self, cell):
+    def hit_cell(self, cell_coords):
+        cell = self.cells[tuple(cell_coords)]
         if cell.tested:
             print('Cell already tested')
-            return
+            return False
         cell.tested = True
         ships = [ship for sublist in self.ships for ship in sublist]
         with self.canvas.after:
@@ -149,6 +140,23 @@ class PrepareGrid(Grid):
                 for x, y in ship:
                     self.selected_ship.append((x+rx, y+ry))
         self.draw_ships()
+
+
+class PlayerGrid(Grid):
+    def on_pos(self, _, pos):
+        self.draw_ships()
+
+    def on_ships(self, _, ships):
+        self.draw_ships()
+
+
+class EnemyGrid(Grid):
+    blocked = BooleanProperty(False)
+
+    def cell_click(self, cell):
+        if not self.blocked:
+            self.hit_cell(cell.coords)
+            self.blocked = True
 
 
 class CellHeader(MDLabel):

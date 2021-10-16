@@ -6,13 +6,14 @@
         orientation: "vertical"
         MDLabel:
             id: whos_turn
-        Grid:
+        EnemyGrid:
             id: enemy_grid
             is_enemy_grid: True
             allowed_ships: root.allowed_ships
             md_bg_color: app.theme_cls.primary_color
-            on_has_turn: whos_turn.text = "Enemy's Turn"
-        Grid:
+            on_blocked:
+                whos_turn.text = "Enemy's Turn" if self.blocked else "Player's Turn"
+                if self.blocked: player_grid.hit_cell(root.ai.make_turn()); self.blocked = False
+        PlayerGrid:
             id: player_grid
             allowed_ships: root.allowed_ships
-            on_has_turn: whos_turn.text = "Player's Turn"
