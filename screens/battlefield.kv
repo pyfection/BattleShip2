@@ -4,11 +4,15 @@
 
     MDBoxLayout:
         orientation: "vertical"
+        MDLabel:
+            id: whos_turn
         Grid:
             id: enemy_grid
             is_enemy_grid: True
             allowed_ships: root.allowed_ships
             md_bg_color: app.theme_cls.primary_color
+            on_has_turn: whos_turn.text = "Enemy's Turn"
         Grid:
             id: player_grid
             allowed_ships: root.allowed_ships
+            on_has_turn: whos_turn.text = "Player's Turn"

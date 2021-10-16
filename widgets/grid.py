@@ -29,6 +29,7 @@ Builder.load_string("""
 class Grid(MDGridLayout):
     allowed_ships = ListProperty()
     is_enemy_grid = BooleanProperty(False)
+    has_turn = BooleanProperty(False)
     dimensions = ListProperty((10, 10))
     cell_size = NumericProperty(dp(30))
     ships = ListProperty()
@@ -79,8 +80,9 @@ class Grid(MDGridLayout):
         )
 
     def cell_click(self, cell):
-        if self.is_enemy_grid:
+        if not self.has_turn and self.is_enemy_grid:
             self.hit_cell(cell)
+            self.has_turn = True
 
     def hit_cell(self, cell):
         if cell.tested:

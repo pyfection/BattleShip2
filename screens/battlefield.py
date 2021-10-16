@@ -13,3 +13,4 @@ class BattleField(MDScreen):
     def start_singleplayer(self, ships):
         self.enemy_grid.randomly_place_ships()
         self.player_grid.ships = ships
+        self.player_grid.has_turn = True
