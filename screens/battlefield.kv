@@ -12,17 +12,3 @@
         Grid:
             id: player_grid
             allowed_ships: root.allowed_ships
-
-<CellHeader>:
-    halign: "center"
-    canvas.before:
-        Color:
-            rgb: 0, 0, 0
-        Rectangle:
-            pos: self.pos
-            size: self.size
-        Color:
-            rgb: app.theme_cls.primary_color
-        Rectangle:
-            pos: self.x + self.line_thickness, self.y + self.line_thickness
-            size: self.width - self.line_thickness*2, self.height - self.line_thickness*2
