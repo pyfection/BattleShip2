@@ -24,25 +24,13 @@ class BattleField(MDScreen):
             Clock.schedule_once(lambda dt: self._create(), 1)  # ToDo: to be removed
 
     def _create(self):
-        ships = []
-        for n in self.allowed_ships:
-            size = [1, n]
-            random.shuffle(size)
-            w, h = size
-            existing_ships = [s for sublist in ships for s in sublist]
-            while True:
-                x = random.randint(0, self.player_grid.dimensions[0] - w)
-                y = random.randint(0, self.player_grid.dimensions[1] - h)
-                points = [(cx+x, cy+y) for cx in range(w) for cy in range(h)]
-                if any(p in existing_ships for p in points):
-                    continue
-                ships.append(points)
-                break
-        self.player_grid.ships = ships
+        self.player_grid.randomly_place_ships()
+        self.enemy_grid.randomly_place_ships()
 
 
 class Grid(MDGridLayout):
-    draw_ships = BooleanProperty(False)
+    allowed_ships = ListProperty()
+    is_enemy_grid = BooleanProperty(False)
     dimensions = ListProperty((10, 10))
     cell_size = NumericProperty(dp(30))
     ships = ListProperty()
@@ -79,20 +67,56 @@ class Grid(MDGridLayout):
                 self.add_widget(cell)
 
     def on_ships(self, _, ships):
-        if self.draw_ships:
+        if not self.is_enemy_grid:
             with self.canvas:
                 for ship in ships:
-                    ship = [(x+1, self.dimensions[1]-y-1) for x, y in ship]
-                    points = [i*self.cell_size+self.cell_size*.5 for sublist in ship for i in sublist]
+                    ship = [self.coords_to_pos(x, y) for x, y in ship]
+                    points = [i for sublist in ship for i in sublist]
                     Color(rgb=(.7, .7, .7))
                     Line(points=points, width=self.cell_size*.5-2)
 
+    def coords_to_pos(self, x, y):
+        return (x+1)*self.cell_size+self.cell_size*.5, (self.dimensions[1]-y-1)*self.cell_size+self.cell_size*.5
+
     def cell_click(self, cell):
-        pass
+        if self.is_enemy_grid:
+            self.hit_cell(cell)
+
+    def hit_cell(self, cell):
+        if cell.tested:
+            print('Cell already tested')
+            return
+        cell.tested = True
+        ships = [ship for sublist in self.ships for ship in sublist]
+        with self.canvas.after:
+            if tuple(cell.coords) in ships:
+                Color(rgb=(1, 0, 0))
+            else:
+                Color(rgb=(0, 0, 1))
+            Line(points=(*cell.pos, cell.right, cell.top), width=2)
+            Line(points=(cell.x, cell.top, cell.right, cell.y), width=2)
+
+    def randomly_place_ships(self):
+        ships = []
+        for n in self.allowed_ships:
+            size = [1, n]
+            random.shuffle(size)
+            w, h = size
+            existing_ships = [s for sublist in ships for s in sublist]
+            while True:
+                x = random.randint(0, self.dimensions[0] - w)
+                y = random.randint(0, self.dimensions[1] - h)
+                points = [(cx+x, cy+y) for cx in range(w) for cy in range(h)]
+                if any(p in existing_ships for p in points):
+                    continue
+                ships.append(points)
+                break
+        self.ships = ships
 
 
 class CellHeader(MDLabel):
     line_thickness = NumericProperty(2)
+    tested = BooleanProperty(False)
 
 
 class Cell(ButtonBehavior, CellHeader):

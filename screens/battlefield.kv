@@ -6,10 +6,12 @@
         orientation: "vertical"
         Grid:
             id: enemy_grid
+            is_enemy_grid: True
+            allowed_ships: root.allowed_ships
             md_bg_color: app.theme_cls.primary_color
         Grid:
             id: player_grid
-            draw_ships: True
+            allowed_ships: root.allowed_ships
 
 <CellHeader>:
     halign: "center"
