@@ -43,6 +43,9 @@ class Grid(MDGridLayout):
         if 'dimensions' not in kwargs:
             self._create()
 
+    def in_dimensions(self, x, y):
+        return 0 <= x < self.dimensions[0] and 0 <= y < self.dimensions[1]
+
     def on_dimensions(self, _, dimensions):
         self._create()
 
@@ -75,14 +78,14 @@ class Grid(MDGridLayout):
         pass
 
     def hit_cell(self, cell_coords):
-        cell = self.cells[tuple(cell_coords)]
+        cell = self.cells[cell_coords]
         if cell.tested:
             print('Cell already tested')
             return None
         cell.tested = True
         ships = [ship for sublist in self.ships for ship in sublist]
         with self.canvas.after:
-            if tuple(cell.coords) in ships:
+            if cell.coords in ships:
                 hit = True
                 Color(rgb=(1, 0, 0))
             else:
@@ -123,28 +126,34 @@ class PrepareGrid(Grid):
     selected_ship = ObjectProperty()
 
     def cell_click(self, cell):
+        ships = [ship for sublist in self.ships for ship in sublist if sublist is not self.selected_ship]
+
         for ship in self.ships:
-            if tuple(cell.coords) in ship:
+            if cell.coords in ship:
                 if ship is self.selected_ship:  # Click on already selected ship
+                    if cell.coords != self.selected_ship[0]:
+                        continue  # Only clicking on left upper part of ship should rotate it
                     # Rotate it
                     ox, oy = ship[0]
-                    ship = self.selected_ship.copy()
-                    self.selected_ship.clear()
-                    for x, y in ship:
-                        self.selected_ship.append((ox+(y-oy), oy+(x-ox)))
+                    new_ship = [(ox+(y-oy), oy+(x-ox)) for x, y in self.selected_ship]
+                    if all(self.in_dimensions(tx, ty) and not (tx, ty) in ships for tx, ty in new_ship[1:]):
+                        ship.clear()
+                        ship.extend(new_ship)
+                        self.selected_ship = ship
                     break
                 else:  # Clicked on another ship
                     # Select ship
                     self.selected_ship = ship
                     break
+
         else:  # Clicked on free cell
             if self.selected_ship:
                 # Move selected ship to new location
                 rx, ry = cell.coords[0]-self.selected_ship[0][0], cell.coords[1]-self.selected_ship[0][1]
-                ship = self.selected_ship.copy()
-                self.selected_ship.clear()
-                for x, y in ship:
-                    self.selected_ship.append((x+rx, y+ry))
+                new_ship = [(x+rx, y+ry) for x, y in self.selected_ship]
+                if all(self.in_dimensions(tx, ty) and not (tx, ty) in ships for tx, ty in new_ship[1:]):
+                    self.selected_ship.clear()
+                    self.selected_ship.extend(new_ship)
         self.draw_ships()
 
     def draw_ships(self):
@@ -180,4 +189,4 @@ class CellHeader(MDLabel):
 
 
 class Cell(ButtonBehavior, CellHeader):
-    coords = ListProperty((0, 0))
+    coords = ObjectProperty((0, 0))
