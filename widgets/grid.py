@@ -126,23 +126,35 @@ class PrepareGrid(Grid):
         for ship in self.ships:
             if tuple(cell.coords) in ship:
                 if ship is self.selected_ship:  # Click on already selected ship
+                    # Rotate it
                     ox, oy = ship[0]
                     ship = self.selected_ship.copy()
                     self.selected_ship.clear()
                     for x, y in ship:
                         self.selected_ship.append((ox+(y-oy), oy+(x-ox)))
                     break
-                else:  # Clicked on another ship or no ship was selected
+                else:  # Clicked on another ship
+                    # Select ship
                     self.selected_ship = ship
                     break
         else:  # Clicked on free cell
             if self.selected_ship:
+                # Move selected ship to new location
                 rx, ry = cell.coords[0]-self.selected_ship[0][0], cell.coords[1]-self.selected_ship[0][1]
                 ship = self.selected_ship.copy()
                 self.selected_ship.clear()
                 for x, y in ship:
                     self.selected_ship.append((x+rx, y+ry))
         self.draw_ships()
+
+    def draw_ships(self):
+        super().draw_ships()
+        if self.selected_ship:
+            with self.canvas:
+                ship = [self.coords_to_pos(x, y) for x, y in self.selected_ship]
+                points = [i for sublist in ship for i in sublist]
+                Color(rgb=(.1, .7, .1))
+                Line(points=points, width=self.cell_size * .5 - 2, group='ships')
 
 
 class PlayerGrid(Grid):
