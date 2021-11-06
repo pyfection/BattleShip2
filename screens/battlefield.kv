@@ -13,7 +13,7 @@
             md_bg_color: app.theme_cls.primary_color
             on_blocked:
                 whos_turn.text = "Enemy's Turn" if self.blocked else "Player's Turn"
-                if self.blocked: root.ai_turn(); self.blocked = False
+                if self.blocked: root.enemy_turn(); self.blocked = False
         PlayerGrid:
             id: player_grid
             allowed_ships: root.allowed_ships

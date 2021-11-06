@@ -6,7 +6,7 @@ Builder.load_file('screens/prepare.kv')
 
 
 class Prepare(MDScreen):
-    game_type = OptionProperty('singleplayer', ['singleplayer', 'multiplayer'])
+    game_type = OptionProperty('singleplayer', options=['singleplayer', 'multiplayer'])
     allowed_ships = ListProperty([5, 4, 4, 3, 3, 3, 2, 2, 2, 2])
 
     def on_kv_post(self, base_widget):
