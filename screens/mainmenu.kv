@@ -1,0 +1,15 @@
+<MainMenu>:
+    AnchorLayout:
+        MDBoxLayout:
+            orientation: "vertical"
+            size_hint_x: .3
+            adaptive_height: True
+
+            MDFillRoundFlatButton:
+                size_hint_x: 1
+                text: "Singleplayer"
+                on_press: app.root.current = 'prepare'
+
+            MDFillRoundFlatButton:
+                size_hint_x: 1
+                text: "Multiplayer"
