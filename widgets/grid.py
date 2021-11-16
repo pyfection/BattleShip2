@@ -75,7 +75,7 @@ class Grid(MDGridLayout):
         self.canvas.remove_group('ships')
         self.canvas.after.remove_group('crosses')
         for cell in self.cells.values():
-            cell.tested = False
+            cell.is_hit = None
 
     def coords_to_pos(self, x, y):
         return (
@@ -88,18 +88,17 @@ class Grid(MDGridLayout):
 
     def hit_cell(self, cell_coords):
         cell = self.cells[cell_coords]
-        if cell.tested:
+        if cell.is_hit is not None:
             print('Cell already tested')
             return None
-        cell.tested = True
         self.last_move = cell_coords
         ships = [ship for sublist in self.ships for ship in sublist]
         with self.canvas.after:
             if cell.coords in ships:
-                hit = True
+                cell.is_hit = hit = True
                 Color(rgb=(1, 0, 0))
             else:
-                hit = False
+                cell.is_hit = hit = False
                 Color(rgb=(0, 0, 1))
             l1 = Line(points=(cell.x, cell.top, cell.x, cell.top), width=2, group='crosses')
             l2 = Line(points=(cell.right, cell.top, cell.right, cell.top), width=2, group='crosses')
@@ -205,8 +204,8 @@ class EnemyGrid(Grid):
 
 class CellHeader(MDLabel):
     line_thickness = NumericProperty(2)
-    tested = BooleanProperty(False)
 
 
 class Cell(ButtonBehavior, CellHeader):
     coords = ObjectProperty((0, 0))
+    is_hit = BooleanProperty(None, allownone=True)

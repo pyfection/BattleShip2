@@ -10,7 +10,7 @@ from kivy.properties import ListProperty, ObjectProperty, StringProperty, Boolea
 from kivy.network.urlrequest import UrlRequest
 from kivymd.uix.screen import MDScreen
 
-from ai import AI
+from ai import MediumAI
 from config import config
 
 
@@ -24,14 +24,12 @@ class BattleField(MDScreen):
 
     def _check_player(self, *args):
         # Check if player won
-        ships = [ship for sublist in self.enemy_grid.ships for ship in sublist]
-        if len([c for c in self.enemy_grid.cells.values() if c.tested and c.coords in ships]) == len(ships):
+        if len([c for c in self.enemy_grid.cells.values() if c.is_hit]) == sum(self.allowed_ships):
             self.has_won = True
             self.playing_area.disabled = True
 
     def _check_enemy(self, *args):
-        ships = [ship for sublist in self.player_grid.ships for ship in sublist]
-        if len([c for c in self.player_grid.cells.values() if c.tested and c.coords in ships]) == len(ships):
+        if len([c for c in self.player_grid.cells.values() if c.is_hit]) == sum(self.allowed_ships):
             self.has_won = False
             self.playing_area.disabled = True
 
@@ -54,11 +52,12 @@ class SPBattleField(BattleField):
     def start_game(self, ships):
         super().start_game(ships)
         self.enemy_grid.randomly_place_ships()
-        self.ai = AI(self.dimensions)
+        self.ai = MediumAI(self.dimensions)
 
     def enemy_turn(self):
-        while True:
-            if self.player_grid.hit_cell(self.ai.make_turn()) is False:  # Hit empty field
+        while self.has_won is None:
+            successes = [c.coords for c in self.player_grid.cells.values() if c.is_hit]
+            if self.player_grid.hit_cell(self.ai.make_turn(successes)) is False:  # Hit empty field
                 break
         self.enemy_grid.blocked = False
 
