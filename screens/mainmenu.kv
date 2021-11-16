@@ -8,8 +8,9 @@
             MDFillRoundFlatButton:
                 size_hint_x: 1
                 text: "Singleplayer"
-                on_press: app.root.current = 'prepare'
+                on_press: app.root.current = 'prepare'; app.root.prepare.game_type = 'singleplayer'
 
             MDFillRoundFlatButton:
                 size_hint_x: 1
                 text: "Multiplayer"
+                on_press: app.root.current = 'prepare'; app.root.prepare.game_type = 'multiplayer'

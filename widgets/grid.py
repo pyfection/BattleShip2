@@ -31,6 +31,7 @@ class Grid(MDGridLayout):
     dimensions = ListProperty((10, 10))
     cell_size = NumericProperty(dp(30))
     ships = ListProperty()
+    last_move = ObjectProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -82,6 +83,7 @@ class Grid(MDGridLayout):
         if cell.tested:
             print('Cell already tested')
             return None
+        self.last_move = cell_coords
         cell.tested = True
         ships = [ship for sublist in self.ships for ship in sublist]
         with self.canvas.after:
@@ -93,7 +95,7 @@ class Grid(MDGridLayout):
                 Color(rgb=(0, 0, 1))
             Line(points=(*cell.pos, cell.right, cell.top), width=2)
             Line(points=(cell.x, cell.top, cell.right, cell.y), width=2)
-            return hit
+        return hit
 
     def randomly_place_ships(self):
         ships = []

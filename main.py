@@ -16,6 +16,9 @@ class BattleShip(App):
         if game_type == 'singleplayer':
             self.root.current = 'sp_battlefield'
             self.root.sp_battlefield.start_game(ships)
+        elif game_type == 'multiplayer':
+            self.root.current = 'mp_battlefield'
+            self.root.mp_battlefield.start_game(ships)
 
 
 if __name__ == '__main__':
