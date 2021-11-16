@@ -50,11 +50,14 @@ class MPBattleField(BattleField):
     player_id = StringProperty(str(uuid.uuid4()))
     player_name = config['PLAYERNAME']
 
-    def on_kv_post(self, base_widget):
+    def on_pre_enter(self, *args):
         self.enemy_grid.blocked = True
         self.disabled = True
         self.enemy_grid.bind(last_move=self._set_own_decision)
         Window.bind(on_request_close=lambda *args: self.disconnect())
+
+    def on_leave(self, *args):
+        self.disconnect()
 
     def _set_own_decision(self, player_grid, move):
         self.end_turn(move)
@@ -78,6 +81,9 @@ class MPBattleField(BattleField):
         )
 
     def _connect(self, req, result):
+        if self.transition_state == 'out':
+            return
+
         if req.resp_headers['status'] == 'waiting':
             sleep(1)
             print("Waiting for connection...")
@@ -99,6 +105,9 @@ class MPBattleField(BattleField):
         )
 
     def _check_turn(self, req, result):
+        if self.transition_state == 'out':
+            return
+
         if req.resp_headers['status'] == 'waiting':
             sleep(1)
             print("Waiting for turn...")
@@ -129,6 +138,9 @@ class MPBattleField(BattleField):
         )
 
     def _end_turn(self, req, result):
+        if self.transition_state == 'out':
+            return
+
         if req.resp_headers['status'] == 'error':
             self.enemy_grid.blocked = False
             self.disabled = False
