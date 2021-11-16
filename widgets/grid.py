@@ -32,7 +32,7 @@ class Grid(MDGridLayout):
     dimensions = ListProperty((10, 10))
     cell_size = NumericProperty(dp(30))
     ships = ListProperty()
-    last_move = ObjectProperty()
+    last_move = ObjectProperty(allownone=True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -70,6 +70,13 @@ class Grid(MDGridLayout):
                 self.cells[(x, y)] = cell
                 self.add_widget(cell)
 
+    def reset(self):
+        self.last_move = None
+        self.canvas.remove_group('ships')
+        self.canvas.after.remove_group('crosses')
+        for cell in self.cells.values():
+            cell.tested = False
+
     def coords_to_pos(self, x, y):
         return (
             self.x+(x+1)*self.cell_size+self.cell_size*.5,
@@ -84,8 +91,8 @@ class Grid(MDGridLayout):
         if cell.tested:
             print('Cell already tested')
             return None
-        self.last_move = cell_coords
         cell.tested = True
+        self.last_move = cell_coords
         ships = [ship for sublist in self.ships for ship in sublist]
         with self.canvas.after:
             if cell.coords in ships:
@@ -94,8 +101,8 @@ class Grid(MDGridLayout):
             else:
                 hit = False
                 Color(rgb=(0, 0, 1))
-            l1 = Line(points=(cell.x, cell.top, cell.x, cell.top), width=2)
-            l2 = Line(points=(cell.right, cell.top, cell.right, cell.top), width=2)
+            l1 = Line(points=(cell.x, cell.top, cell.x, cell.top), width=2, group='crosses')
+            l2 = Line(points=(cell.right, cell.top, cell.right, cell.top), width=2, group='crosses')
             anim1 = Animation(points=(cell.x, cell.top, cell.right, cell.y), d=.1)
             anim2 = Animation(points=(cell.right, cell.top, *cell.pos), d=.1)
             anim1.bind(on_complete=lambda *args: anim2.start(l2))

@@ -20,22 +20,41 @@ Builder.load_file('screens/battlefield.kv')
 class BattleField(MDScreen):
     allowed_ships = ListProperty([5, 4, 4, 3, 3, 3, 2, 2, 2, 2])
     dimensions = ListProperty((10, 10))
+    has_won = BooleanProperty(None, allownone=True)
+
+    def _check_player(self, *args):
+        # Check if player won
+        ships = [ship for sublist in self.enemy_grid.ships for ship in sublist]
+        if len([c for c in self.enemy_grid.cells.values() if c.tested and c.coords in ships]) == len(ships):
+            self.has_won = True
+            self.playing_area.disabled = True
+
+    def _check_enemy(self, *args):
+        ships = [ship for sublist in self.player_grid.ships for ship in sublist]
+        if len([c for c in self.player_grid.cells.values() if c.tested and c.coords in ships]) == len(ships):
+            self.has_won = False
+            self.playing_area.disabled = True
 
     def start_game(self, ships):
+        self.enemy_grid.reset()
+        self.player_grid.reset()
+        self.playing_area.disabled = False
+        self.has_won = None
         self.player_grid.ships = ships
+        self.enemy_grid.bind(last_move=self._check_player)
+        self.player_grid.bind(last_move=self._check_enemy)
 
     def enemy_turn(self):
         pass
 
 
 class SPBattleField(BattleField):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.ai = AI(self.dimensions)
+    ai = ObjectProperty()
 
     def start_game(self, ships):
         super().start_game(ships)
         self.enemy_grid.randomly_place_ships()
+        self.ai = AI(self.dimensions)
 
     def enemy_turn(self):
         while True:
