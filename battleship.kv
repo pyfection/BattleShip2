@@ -1,7 +1,10 @@
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+
 ScreenManager:
     prepare: prepare
     sp_battlefield: sp_battlefield
     mp_battlefield: mp_battlefield
+    transition: NoTransition()
 
     MainMenu:
         id: main

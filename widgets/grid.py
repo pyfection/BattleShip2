@@ -132,6 +132,12 @@ class Grid(MDGridLayout):
 class PrepareGrid(Grid):
     selected_ship = ObjectProperty()
 
+    def on_pos(self, *args):
+        self.draw_ships()
+
+    def on_ships(self, _, ships):
+        self.draw_ships()
+
     def cell_click(self, cell):
         ships = [ship for sublist in self.ships for ship in sublist if sublist is not self.selected_ship]
 
