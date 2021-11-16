@@ -5,6 +5,7 @@ from kivy.lang.builder import Builder
 from kivy.metrics import dp
 from kivy.graphics import Color, Line
 from kivy.animation import Animation
+from kivy.core.audio import SoundLoader
 from kivy.uix.behaviors.button import ButtonBehavior
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.label import MDLabel
@@ -33,6 +34,7 @@ class Grid(MDGridLayout):
     cell_size = NumericProperty(dp(30))
     ships = ListProperty()
     last_move = ObjectProperty(allownone=True)
+    cross_sound = ObjectProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -44,6 +46,9 @@ class Grid(MDGridLayout):
         self.cells = {}
         if 'dimensions' not in kwargs:
             self._create()
+
+    def on_kv_post(self, base_widget):
+        self.cross_sound = SoundLoader.load('assets/pen-cross.wav')
 
     def in_dimensions(self, x, y):
         return 0 <= x < self.dimensions[0] and 0 <= y < self.dimensions[1]
@@ -87,24 +92,31 @@ class Grid(MDGridLayout):
         pass
 
     def hit_cell(self, cell_coords):
+        def _draw_second_line_of_cross(color):
+            with self.canvas.after:
+                Color(rgb=color)
+                l2 = Line(points=(cell.right, cell.top, cell.right, cell.top), width=2, group='crosses')
+                anim2 = Animation(points=(cell.right, cell.top, *cell.pos), d=.3)
+                anim2.start(l2)
         cell = self.cells[cell_coords]
         if cell.is_hit is not None:
             print('Cell already tested')
             return None
         self.last_move = cell_coords
         ships = [ship for sublist in self.ships for ship in sublist]
+        self.cross_sound.play()
+        self.cross_sound.seek(0)
         with self.canvas.after:
             if cell.coords in ships:
                 cell.is_hit = hit = True
-                Color(rgb=(1, 0, 0))
+                color = (1, 0, 0)
             else:
                 cell.is_hit = hit = False
-                Color(rgb=(0, 0, 1))
+                color = (0, 0, 1)
+            Color(rgb=color)
             l1 = Line(points=(cell.x, cell.top, cell.x, cell.top), width=2, group='crosses')
-            l2 = Line(points=(cell.right, cell.top, cell.right, cell.top), width=2, group='crosses')
-            anim1 = Animation(points=(cell.x, cell.top, cell.right, cell.y), d=.1)
-            anim2 = Animation(points=(cell.right, cell.top, *cell.pos), d=.1)
-            anim1.bind(on_complete=lambda *args: anim2.start(l2))
+            anim1 = Animation(points=(cell.x, cell.top, cell.right, cell.y), d=.3)
+            anim1.bind(on_complete=lambda anim, widget, color=color: _draw_second_line_of_cross(color))
             anim1.start(l1)
         return hit
 
