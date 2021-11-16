@@ -40,4 +40,4 @@ venv.bak/
 .idea
 
 # Project
-db/localdb.json
+config.json

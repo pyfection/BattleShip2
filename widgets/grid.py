@@ -4,6 +4,7 @@ from kivy.properties import BooleanProperty, NumericProperty, ListProperty, Obje
 from kivy.lang.builder import Builder
 from kivy.metrics import dp
 from kivy.graphics import Color, Line
+from kivy.animation import Animation
 from kivy.uix.behaviors.button import ButtonBehavior
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.label import MDLabel
@@ -93,8 +94,12 @@ class Grid(MDGridLayout):
             else:
                 hit = False
                 Color(rgb=(0, 0, 1))
-            Line(points=(*cell.pos, cell.right, cell.top), width=2)
-            Line(points=(cell.x, cell.top, cell.right, cell.y), width=2)
+            l1 = Line(points=(cell.x, cell.top, cell.x, cell.top), width=2)
+            l2 = Line(points=(cell.right, cell.top, cell.right, cell.top), width=2)
+            anim1 = Animation(points=(cell.x, cell.top, cell.right, cell.y), d=.1)
+            anim2 = Animation(points=(cell.right, cell.top, *cell.pos), d=.1)
+            anim1.bind(on_complete=lambda *args: anim2.start(l2))
+            anim1.start(l1)
         return hit
 
     def randomly_place_ships(self):

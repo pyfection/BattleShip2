@@ -52,6 +52,7 @@ class MPBattleField(BattleField):
 
     def on_kv_post(self, base_widget):
         self.enemy_grid.blocked = True
+        self.disabled = True
         self.enemy_grid.bind(last_move=self._set_own_decision)
         Window.bind(on_request_close=lambda *args: self.disconnect())
 
@@ -112,11 +113,13 @@ class MPBattleField(BattleField):
                 x, y = (i % w, i // w)
                 self.player_grid.hit_cell((x, y))
             self.enemy_grid.blocked = False
+            self.disabled = False
         else:
             raise ValueError(f"Status {req.resp_headers['status']} is not a valid status!")
 
     def end_turn(self, move):
         self.enemy_grid.blocked = True
+        self.disabled = True
         w, h = self.dimensions
         i = move[1]*w+move[0]
         hit = int('0'*i + '1' + '0'*(w*h-(i+1)), 2)
@@ -128,6 +131,7 @@ class MPBattleField(BattleField):
     def _end_turn(self, req, result):
         if req.resp_headers['status'] == 'error':
             self.enemy_grid.blocked = False
+            self.disabled = False
             print("Error:", result['error'])
         elif req.resp_headers['status'] == 'success':
             print("Sucessfully ended turn!")
@@ -143,3 +147,4 @@ class MPBattleField(BattleField):
     def on_enemy_decision(self, _, enemy_decision):
         self.player_grid.hit_cell(enemy_decision)
         self.enemy_grid.blocked = False
+        self.disabled = False
