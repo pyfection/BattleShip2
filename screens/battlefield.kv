@@ -31,11 +31,12 @@
                 MDLabel:
                     id: remaining_ships
 
-        BoxLayout:
+        MDBoxLayout:
             id: menu_overlay
             orientation: 'vertical'
             size_hint_y: 0 if root.has_won is None else 1
             opacity: 0 if root.has_won is None else 1
+            md_bg_color: (0, 0, 0, .8)
 
             ShadowLabel:
                 text_size: self.width, self.height
@@ -49,7 +50,7 @@
                 text: "You have won!" if root.has_won else "You have lost"
 
             AnchorLayout:
-                BoxLayout:
+                MDBoxLayout:
                     orientation: 'vertical'
                     size_hint: 0.6, 0.4
                     spacing: "10dp"
