@@ -1,11 +1,10 @@
-import os
 import uuid
 from time import sleep
-import json
 import requests
 
 from kivy.core.window import Window
 from kivy.lang.builder import Builder
+from kivy.clock import Clock
 from kivy.properties import ListProperty, ObjectProperty, StringProperty, BooleanProperty
 from kivy.network.urlrequest import UrlRequest
 from kivymd.uix.screen import MDScreen
@@ -49,17 +48,20 @@ class BattleField(MDScreen):
 class SPBattleField(BattleField):
     ai = ObjectProperty()
 
+    def _enemy_turn(self, *args):
+        successes = [c.coords for c in self.player_grid.cells.values() if c.is_hit]
+        if self.player_grid.hit_cell(self.ai.make_turn(successes)) is True:  # Hit ship
+            self.enemy_turn()
+        self.enemy_grid.blocked = False
+
     def start_game(self, ships):
         super().start_game(ships)
         self.enemy_grid.randomly_place_ships()
         self.ai = MediumAI(self.dimensions)
 
     def enemy_turn(self):
-        while self.has_won is None:
-            successes = [c.coords for c in self.player_grid.cells.values() if c.is_hit]
-            if self.player_grid.hit_cell(self.ai.make_turn(successes)) is False:  # Hit empty field
-                break
-        self.enemy_grid.blocked = False
+        if self.has_won is None:
+            Clock.schedule_once(self._enemy_turn, 1)
 
 
 class MPBattleField(BattleField):
