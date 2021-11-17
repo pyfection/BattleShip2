@@ -1,6 +1,7 @@
 from kivy.lang.builder import Builder
 from kivy.properties import ObjectProperty, NumericProperty, ListProperty
 from kivy.clock import Clock
+from kivy.core.audio import SoundLoader
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.label import Label
 from kivymd.uix.button import MDIconButton
@@ -21,6 +22,15 @@ Builder.load_string("""
 class RoundButton(ButtonBehavior, Label):
     _radius = NumericProperty(18)
     bg_color = ListProperty([.7, .7, .7, 1])
+    click_sound = ObjectProperty(SoundLoader.load('assets/button.wav'))
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.bind(on_press=self._play_sound)
+
+    def _play_sound(self, *args):
+        self.click_sound.play()
+        self.click_sound.seek(0)
 
 
 class AnimatedIconButton(MDIconButton):

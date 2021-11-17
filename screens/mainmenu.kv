@@ -5,12 +5,12 @@
             size_hint_x: .3
             adaptive_height: True
 
-            MDFillRoundFlatButton:
+            RoundButton:
                 size_hint_x: 1
                 text: "Singleplayer"
                 on_press: app.root.current = 'prepare'; app.root.prepare.game_type = 'singleplayer'
 
-            MDFillRoundFlatButton:
+            RoundButton:
                 size_hint_x: 1
                 text: "Multiplayer"
                 on_press: app.root.current = 'prepare'; app.root.prepare.game_type = 'multiplayer'

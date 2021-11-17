@@ -13,10 +13,10 @@
 
         MDBoxLayout:
             adaptive_height: True
-            MDRaisedButton:
+            RoundButton:
                 text: "Back"
                 on_press: root.manager.current = 'main'
             Widget:
-            MDRaisedButton:
+            RoundButton:
                 text: "Start"
                 on_press: app.start_battle(grid.ships, root.game_type)
