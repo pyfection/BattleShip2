@@ -21,7 +21,7 @@ Builder.load_string("""
             pos: self.pos
             size: self.size
         Color:
-            rgb: app.theme_cls.primary_color
+            rgb: self.bg_color
         Rectangle:
             pos: self.x + self.line_thickness, self.y + self.line_thickness
             size: self.width - self.line_thickness*2, self.height - self.line_thickness*2
@@ -216,8 +216,13 @@ class EnemyGrid(Grid):
 
 class CellHeader(MDLabel):
     line_thickness = NumericProperty(2)
+    bg_color = ListProperty([0, 132/255, 210/255])
 
 
 class Cell(ButtonBehavior, CellHeader):
     coords = ObjectProperty((0, 0))
     is_hit = BooleanProperty(None, allownone=True)
+
+    def on_is_hit(self, *args):
+        if self.is_hit:
+            self.bg_color = (0.4, 0, 0)
