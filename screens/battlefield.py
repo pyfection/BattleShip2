@@ -8,6 +8,7 @@ from kivy.clock import Clock
 from kivy.properties import ListProperty, ObjectProperty, StringProperty, BooleanProperty
 from kivy.network.urlrequest import UrlRequest
 from kivymd.uix.screen import MDScreen
+from kivymd.uix.snackbar import Snackbar
 
 from ai import MediumAI
 from config import config
@@ -21,21 +22,32 @@ class BattleField(MDScreen):
     dimensions = ListProperty((10, 10))
     has_won = BooleanProperty(None, allownone=True)
 
-    def _check_player(self, *args):
+    def _check_player(self, grid, coords):
         # Check if player won
-        remaining_ships = len([c for c in self.enemy_grid.cells.values() if c.is_hit])
-        allowed_ships = sum(self.allowed_ships)
-        self.remaining_ships.remaining = str(allowed_ships - remaining_ships)
-        if remaining_ships == allowed_ships:
-            self.has_won = True
-            self.playing_area.disabled = True
+        cell = grid.cells[coords]
+        if cell.is_hit:
+            remaining_ships = len([c for c in grid.cells.values() if c.is_hit])
+            allowed_ships = sum(self.allowed_ships)
+            text = str(allowed_ships - remaining_ships)
+            grid.info_cell.text = text
+            if remaining_ships == allowed_ships:
+                self.has_won = True
+                self.playing_area.disabled = True
 
-    def _check_enemy(self, *args):
-        if len([c for c in self.player_grid.cells.values() if c.is_hit]) == sum(self.allowed_ships):
-            self.has_won = False
-            self.playing_area.disabled = True
+    def _check_enemy(self, grid, coords):
+        cell = grid.cells[coords]
+        if cell.is_hit:
+            remaining_ships = len([c for c in grid.cells.values() if c.is_hit])
+            allowed_ships = sum(self.allowed_ships)
+            text = str(allowed_ships - remaining_ships)
+            grid.info_cell.text = text
+            if remaining_ships == allowed_ships:
+                self.has_won = False
+                self.playing_area.disabled = True
 
     def start_game(self, ships):
+        self.enemy_grid.unbind(last_move=self._check_player)
+        self.player_grid.unbind(last_move=self._check_enemy)
         self.enemy_grid.reset()
         self.player_grid.reset()
         self.playing_area.disabled = False

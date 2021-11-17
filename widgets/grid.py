@@ -12,6 +12,9 @@ from kivymd.uix.label import MDLabel
 
 
 Builder.load_string("""
+<Grid>:
+    size_hint: None, None
+
 <CellHeader>:
     halign: "center"
     canvas.before:
@@ -31,24 +34,19 @@ Builder.load_string("""
 class Grid(MDGridLayout):
     allowed_ships = ListProperty()
     dimensions = ListProperty((10, 10))
-    cell_size = NumericProperty(dp(30))
     ships = ListProperty()
     last_move = ObjectProperty(allownone=True)
     cross_sound = ObjectProperty()
+    cells = ObjectProperty()
+    info_cell = ObjectProperty()
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.adaptive_size = True
-        self.col_force_default = True
-        self.row_force_default = True
-        self.col_default_width = self.cell_size
-        self.row_default_height = self.cell_size
-        self.cells = {}
-        if 'dimensions' not in kwargs:
-            self._create()
+    @property
+    def cell_size(self):
+        return self.width / (self.dimensions[0] + 1)
 
     def on_kv_post(self, base_widget):
         self.cross_sound = SoundLoader.load('assets/pen-cross.wav')
+        self._create()
 
     def in_dimensions(self, x, y):
         return 0 <= x < self.dimensions[0] and 0 <= y < self.dimensions[1]
@@ -57,11 +55,12 @@ class Grid(MDGridLayout):
         self._create()
 
     def _create(self):
+        self.cells = {}
         self.clear_widgets()
         w, h = self.dimensions
         self.cols = w+1
-        label = CellHeader()
-        self.add_widget(label)
+        self.info_cell = CellHeader(bold=True)
+        self.add_widget(self.info_cell)
 
         for i in range(w):
             label = CellHeader(text=chr(i+65))
@@ -77,15 +76,17 @@ class Grid(MDGridLayout):
 
     def reset(self):
         self.last_move = None
+        self.info_cell.text = ""
         self.canvas.remove_group('ships')
         self.canvas.after.remove_group('crosses')
         for cell in self.cells.values():
             cell.is_hit = None
 
     def coords_to_pos(self, x, y):
+        cs = self.cell_size
         return (
-            self.x+(x+1)*self.cell_size+self.cell_size*.5,
-            self.y+(self.dimensions[1]-y-1)*self.cell_size+self.cell_size*.5
+            self.x + (x+1) * cs + cs * .5,
+            self.y + (self.dimensions[1]-y-1) * cs + cs * .5
         )
 
     def cell_click(self, cell):
@@ -93,10 +94,14 @@ class Grid(MDGridLayout):
 
     def hit_cell(self, cell_coords):
         def _draw_second_line_of_cross(color):
+            cs = self.cell_size
+            x, y = self.coords_to_pos(*cell.coords)
+            x, y = x - cs * .5, y - cs * .5
+            top, right = y + cs, x + cs
             with self.canvas.after:
                 Color(rgb=color)
-                l2 = Line(points=(cell.right, cell.top, cell.right, cell.top), width=2, group='crosses')
-                anim2 = Animation(points=(cell.right, cell.top, *cell.pos), d=.3)
+                l2 = Line(points=(right, top, right, top), width=2, group='crosses')
+                anim2 = Animation(points=(right, top, x, y), d=.3)
                 anim2.start(l2)
         cell = self.cells[cell_coords]
         if cell.is_hit is not None:
@@ -113,8 +118,12 @@ class Grid(MDGridLayout):
                 cell.is_hit = hit = False
                 color = (0, 0, 1)
             Color(rgb=color)
-            l1 = Line(points=(cell.x, cell.top, cell.x, cell.top), width=2, group='crosses')
-            anim1 = Animation(points=(cell.x, cell.top, cell.right, cell.y), d=.3)
+            cs = self.cell_size
+            x, y = self.coords_to_pos(*cell.coords)
+            x, y = x - cs * .5, y - cs * .5
+            top, right = y + cs, x + cs
+            l1 = Line(points=(x, top, x, top), width=2, group='crosses')
+            anim1 = Animation(points=(x, top, right, y), d=.3)
             anim1.bind(on_complete=lambda anim, widget, color=color: _draw_second_line_of_cross(color))
             anim1.start(l1)
         self.last_move = cell_coords
@@ -139,12 +148,13 @@ class Grid(MDGridLayout):
 
     def draw_ships(self):
         self.canvas.remove_group('ships')
+        cs = self.cell_size
         with self.canvas:
+            Color(rgb=(.7, .7, .7))
             for ship in self.ships:
                 ship = [self.coords_to_pos(x, y) for x, y in ship]
                 points = [i for sublist in ship for i in sublist]
-                Color(rgb=(.7, .7, .7))
-                Line(points=points, width=self.cell_size * .5 - 2, group='ships')
+                Line(points=points, width=cs * .5 - 2, group='ships')
 
 
 class PrepareGrid(Grid):
@@ -198,7 +208,7 @@ class PrepareGrid(Grid):
 
 
 class PlayerGrid(Grid):
-    def on_pos(self, _, pos):
+    def on_size(self, _, size):
         self.draw_ships()
 
     def on_ships(self, _, ships):
@@ -215,8 +225,11 @@ class EnemyGrid(Grid):
 
 
 class CellHeader(MDLabel):
+    DEFAULT_COLOR = [0, 132/255, 210/255]
+    HIT_COLOR = [0.4, 0, 0]
+    MISS_COLOR = [0, 0, 0.4]
     line_thickness = NumericProperty(2)
-    bg_color = ListProperty([0, 132/255, 210/255])
+    bg_color = ListProperty(DEFAULT_COLOR)
 
 
 class Cell(ButtonBehavior, CellHeader):
@@ -225,4 +238,8 @@ class Cell(ButtonBehavior, CellHeader):
 
     def on_is_hit(self, *args):
         if self.is_hit:
-            self.bg_color = (0.4, 0, 0)
+            self.bg_color = self.HIT_COLOR
+        elif self.is_hit is False:
+            self.bg_color = self.MISS_COLOR
+        else:
+            self.bg_color = self.DEFAULT_COLOR

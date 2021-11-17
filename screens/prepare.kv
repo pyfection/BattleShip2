@@ -7,6 +7,10 @@
         AnchorLayout:
             anchor_x: 'center'
             anchor_y: 'center'
+            on_size:
+                s = min(self.size)
+                grid.size = (s, s)
+
             PrepareGrid:
                 id: grid
                 allowed_ships: root.allowed_ships

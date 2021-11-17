@@ -2,38 +2,27 @@
     playing_area: playing_area
     enemy_grid: enemy_grid
     player_grid: player_grid
-    remaining_ships: remaining_ships
 
     AnchorLayout:
         MDBoxLayout:
             id: playing_area
-            MDBoxLayout:
-                orientation: "vertical"
+            orientation: "vertical"
+            on_size:
+                s = min([self.width, self.height*.5])
+                enemy_grid.size = (s, s)
+                player_grid.size = (s, s)
 
-                EnemyGrid:
-                    id: enemy_grid
-                    is_enemy_grid: True
-                    allowed_ships: root.allowed_ships
-                    md_bg_color: app.theme_cls.primary_color
-                    on_blocked:
-                        whos_turn.text = "Enemy's Turn" if self.blocked else "Player's Turn"
-                        if self.blocked: root.enemy_turn()
+            EnemyGrid:
+                id: enemy_grid
+                is_enemy_grid: True
+                allowed_ships: root.allowed_ships
+                md_bg_color: app.theme_cls.primary_color
+                on_blocked:
+                    if self.blocked: root.enemy_turn()
 
-                PlayerGrid:
-                    id: player_grid
-                    allowed_ships: root.allowed_ships
-
-            MDBoxLayout:
-                orientation: "vertical"
-
-                MDLabel:
-                    id: whos_turn
-
-                MDLabel:
-                    id: remaining_ships
-                    remaining: 0
-                    halign: "center"
-                    text: "Ships remaining: " + str(int(self.remaining)) if self.remaining else ""
+            PlayerGrid:
+                id: player_grid
+                allowed_ships: root.allowed_ships
 
         MDBoxLayout:
             id: menu_overlay
