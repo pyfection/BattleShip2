@@ -102,7 +102,6 @@ class Grid(MDGridLayout):
         if cell.is_hit is not None:
             print('Cell already tested')
             return None
-        self.last_move = cell_coords
         ships = [ship for sublist in self.ships for ship in sublist]
         self.cross_sound.play()
         self.cross_sound.seek(0)
@@ -118,6 +117,7 @@ class Grid(MDGridLayout):
             anim1 = Animation(points=(cell.x, cell.top, cell.right, cell.y), d=.3)
             anim1.bind(on_complete=lambda anim, widget, color=color: _draw_second_line_of_cross(color))
             anim1.start(l1)
+        self.last_move = cell_coords
         return hit
 
     def randomly_place_ships(self):

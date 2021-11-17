@@ -23,7 +23,10 @@ class BattleField(MDScreen):
 
     def _check_player(self, *args):
         # Check if player won
-        if len([c for c in self.enemy_grid.cells.values() if c.is_hit]) == sum(self.allowed_ships):
+        remaining_ships = len([c for c in self.enemy_grid.cells.values() if c.is_hit])
+        allowed_ships = sum(self.allowed_ships)
+        self.remaining_ships.remaining = str(allowed_ships - remaining_ships)
+        if remaining_ships == allowed_ships:
             self.has_won = True
             self.playing_area.disabled = True
 

@@ -2,6 +2,7 @@
     playing_area: playing_area
     enemy_grid: enemy_grid
     player_grid: player_grid
+    remaining_ships: remaining_ships
 
     AnchorLayout:
         MDBoxLayout:
@@ -30,6 +31,9 @@
 
                 MDLabel:
                     id: remaining_ships
+                    remaining: 0
+                    halign: "center"
+                    text: "Ships remaining: " + str(int(self.remaining)) if self.remaining else ""
 
         MDBoxLayout:
             id: menu_overlay
