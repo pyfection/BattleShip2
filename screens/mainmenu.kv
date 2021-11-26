@@ -1,5 +1,13 @@
 <MainMenu>:
     AnchorLayout:
+        Background:
+            size: self.parent.size
+            pos: self.parent.pos
+            canvas:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
         MDBoxLayout:
             orientation: "vertical"
             size_hint_x: .3
