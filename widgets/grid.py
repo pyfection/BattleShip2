@@ -2,8 +2,7 @@ import random
 
 from kivy.properties import BooleanProperty, NumericProperty, ListProperty, ObjectProperty
 from kivy.lang.builder import Builder
-from kivy.metrics import dp
-from kivy.graphics import Color, Line
+from kivy.graphics import Color, Line, Rectangle
 from kivy.animation import Animation
 from kivy.core.audio import SoundLoader
 from kivy.uix.behaviors.button import ButtonBehavior
@@ -149,22 +148,28 @@ class Grid(MDGridLayout):
     def draw_ships(self):
         self.canvas.remove_group('ships')
         cs = self.cell_size
+        s = cs - 2
         with self.canvas:
             Color(rgb=(.7, .7, .7))
             for ship in self.ships:
-                ship = [self.coords_to_pos(x, y) for x, y in ship]
-                points = [i for sublist in ship for i in sublist]
-                Line(points=points, width=cs * .5 - 2, group='ships')
+                for x, y in ship:
+                    x, y = self.coords_to_pos(x, y)
+                    x, y = x-s*.5, y-s*.5
+                    Rectangle(pos=(x, y), size=(s, s), group='ships')
 
 
 class PrepareGrid(Grid):
-    selected_ship = ObjectProperty()
+    selected_ship = ObjectProperty(allownone=True)
 
     def on_pos(self, *args):
         self.draw_ships()
 
     def on_ships(self, _, ships):
         self.draw_ships()
+
+    def reset(self):
+        self.selected_ship = None
+        super().reset()
 
     def cell_click(self, cell):
         ships = [ship for sublist in self.ships for ship in sublist if sublist is not self.selected_ship]
@@ -200,11 +205,13 @@ class PrepareGrid(Grid):
     def draw_ships(self):
         super().draw_ships()
         if self.selected_ship:
+            s = self.cell_size - 2
             with self.canvas:
-                ship = [self.coords_to_pos(x, y) for x, y in self.selected_ship]
-                points = [i for sublist in ship for i in sublist]
-                Color(rgb=(.1, .7, .1))
-                Line(points=points, width=self.cell_size * .5 - 2, group='ships')
+                for x, y in self.selected_ship:
+                    x, y = self.coords_to_pos(x, y)
+                    x, y = x-s*.5, y-s*.5
+                    Color(rgb=(.1, .7, .1))
+                    Line(points=[x, y, x+s, y, x+s, y+s, x, y+s], width=3, close=True, group='ships')
 
 
 class PlayerGrid(Grid):

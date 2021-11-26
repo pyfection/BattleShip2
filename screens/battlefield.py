@@ -8,7 +8,6 @@ from kivy.clock import Clock
 from kivy.properties import ListProperty, ObjectProperty, StringProperty, BooleanProperty
 from kivy.network.urlrequest import UrlRequest
 from kivymd.uix.screen import MDScreen
-from kivymd.uix.snackbar import Snackbar
 
 from ai import MediumAI
 from config import config

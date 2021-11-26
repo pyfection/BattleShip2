@@ -1,7 +1,7 @@
 from kivy.core.window import Window
 from kivy.lang.builder import Builder
 from kivy.clock import Clock
-from kivy.graphics import RenderContext, Color, Rectangle
+from kivy.graphics import RenderContext
 from kivymd.uix.screen import MDScreen
 from kivy.uix.widget import Widget
 
@@ -10,8 +10,6 @@ Builder.load_file('screens/mainmenu.kv')
 
 class MainMenu(MDScreen):
     pass
-    # def on_kv_post(self, base_widget):
-    #     self.background_.add_widget(Background())
 
 
 class Background(Widget):
