@@ -18,12 +18,13 @@ class MediumAI(AI):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         w, h = self.dimensions
-        self._grid = ((x, y) for x in range(w) for y in range(h) if x % 2 == y % 2)
+        self._grid = list((x, y) for x in range(w) for y in range(h) if x % 2 == y % 2)
+        random.shuffle(self._grid)
 
     def make_turn(self, successes):
         try:
-            coords = next(self._grid)
-        except StopIteration:
+            coords = self._grid.pop()
+        except IndexError:
             for success in successes:
                 coords = self.get_free_neighbor(*success)
                 if coords:
