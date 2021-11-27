@@ -10,5 +10,6 @@ class Prepare(MDScreen):
     allowed_ships = ListProperty([5, 4, 4, 3, 3, 3, 2, 2, 2, 2])
 
     def on_pre_enter(self, *args):
+        self.grid.reset()
         self.grid.randomly_place_ships()
 
