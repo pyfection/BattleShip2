@@ -68,7 +68,8 @@ class SPBattleField(BattleField):
         successes = [c.coords for c in self.player_grid.cells.values() if c.is_hit]
         if self.player_grid.hit_cell(self.ai.make_turn(successes)) is True:  # Hit ship
             self.enemy_turn()
-        self.enemy_grid.blocked = False
+        else:
+            self.enemy_grid.blocked = False
 
     def start_game(self, ships):
         super().start_game(ships)
