@@ -81,11 +81,11 @@ class Grid(MDGridLayout):
         for cell in self.cells.values():
             cell.is_hit = None
 
-    def coords_to_pos(self, x, y):
+    def coords_to_pos(self, x, y, centered=True):
         cs = self.cell_size
         return (
-            self.x + (x+1) * cs + cs * .5,
-            self.y + (self.dimensions[1]-y-1) * cs + cs * .5
+            self.x + (x+1) * cs + cs * (.5 * int(centered)),
+            self.y + (self.dimensions[1]-y-1) * cs + cs * (.5 * int(centered))
         )
 
     def cell_click(self, cell):
@@ -148,14 +148,27 @@ class Grid(MDGridLayout):
     def draw_ships(self):
         self.canvas.remove_group('ships')
         cs = self.cell_size
-        s = cs - 2
+        w = 2
+        s = cs - w
         with self.canvas:
-            Color(rgb=(.7, .7, .7))
             for ship in self.ships:
                 for x, y in ship:
-                    x, y = self.coords_to_pos(x, y)
-                    x, y = x-s*.5, y-s*.5
-                    Rectangle(pos=(x, y), size=(s, s), group='ships')
+                    x, y = self.coords_to_pos(x, y, centered=False)
+                    # x, y = x-s*.5, y-s*.5
+                    Color(rgb=(.5, .5, .5))
+                    Rectangle(pos=(x, y), size=(cs, cs), group='ships')
+                    Color(rgb=(.7, .7, .7))
+                    Rectangle(pos=(x+w*.5, y+w*.5), size=(s, s), group='ships')
+
+                Color(rgb=(.5, .5, .5))
+                x, y = ship[0]
+                r, b = ship[-1]
+                x, r = sorted([x, r])
+                y, b = sorted([y, b])
+                x, y = self.coords_to_pos(x, y-1, centered=False)
+                r, b = self.coords_to_pos(r+1, b, centered=False)
+                x, y, r, b = x+w, y-w, r-w, b+w
+                Line(points=[x, y, r, y, r, b, x, b], width=w, close=True, group='ships')
 
 
 class PrepareGrid(Grid):
@@ -232,7 +245,7 @@ class EnemyGrid(Grid):
 
 
 class CellHeader(MDLabel):
-    DEFAULT_COLOR = [0, 132/255, 210/255]
+    DEFAULT_COLOR = [20/255, 94/255, 138/255]
     HIT_COLOR = [0.4, 0, 0]
     MISS_COLOR = [0, 0, 0.4]
     line_thickness = NumericProperty(2)
@@ -240,8 +253,10 @@ class CellHeader(MDLabel):
 
 
 class Cell(ButtonBehavior, CellHeader):
+    DEFAULT_COLOR = [0, 132/255, 210/255]
     coords = ObjectProperty((0, 0))
     is_hit = BooleanProperty(None, allownone=True)
+    bg_color = ListProperty(DEFAULT_COLOR)
 
     def on_is_hit(self, *args):
         if self.is_hit:
