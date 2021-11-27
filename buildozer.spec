@@ -46,7 +46,7 @@ requirements.source.kivymd = ../../kivymd
 #garden_requirements =
 
 # (str) Presplash of the application
-presplash.filename = icon.png
+presplash.filename = logo.png
 
 # (str) Icon of the application
 icon.filename = icon.png
@@ -82,7 +82,7 @@ fullscreen = 0
 # red, blue, green, black, white, gray, cyan, magenta, yellow, lightgray,
 # darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon, navy,
 # olive, purple, silver, teal.
-#android.presplash_color = #FFFFFF
+android.presplash_color = #363B3F
 
 # (list) Permissions
 android.permissions = INTERNET,ACCESS_NETWORK_STATE,WRITE_EXTERNAL_STORAGE
