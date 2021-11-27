@@ -1,4 +1,5 @@
 from kivymd.app import MDApp as App
+from kivy.base import EventLoop
 from kivy.factory import Factory
 
 
@@ -16,6 +17,15 @@ Factory.register('MPBattleField', module='screens.battlefield')
 class BattleShip(App):
     title = "BattleShip"
     icon = "icon.png"
+
+    def on_start(self):
+        EventLoop.window.bind(on_keyboard=self.hook_keyboard)
+
+    def hook_keyboard(self, window, key, *largs):
+        if key == 27:  # Escape
+            if self.root.current != 'main':
+                self.root.current = 'main'
+            return True
 
     def start_battle(self, ships, game_type):
         if game_type == 'singleplayer':
