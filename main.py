@@ -3,11 +3,9 @@ from kivy.base import EventLoop
 from kivy.factory import Factory
 
 
-Factory.register('PrepareGrid', module='widgets.grid')
-Factory.register('PlayerGrid', module='widgets.grid')
-Factory.register('EnemyGrid', module='widgets.grid')
 Factory.register('ShadowLabel', module='widgets.shadowlabel')
 Factory.register('RoundButton', module='widgets.button')
+
 Factory.register('MainMenu', module='screens.mainmenu')
 Factory.register('Prepare', module='screens.prepare')
 Factory.register('SPBattleField', module='screens.battlefield')

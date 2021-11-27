@@ -4,6 +4,7 @@ import requests
 
 from kivy.core.window import Window
 from kivy.lang.builder import Builder
+from kivy.factory import Factory
 from kivy.clock import Clock
 from kivy.properties import ListProperty, ObjectProperty, StringProperty, BooleanProperty
 from kivy.network.urlrequest import UrlRequest
@@ -15,13 +16,19 @@ from ai import MediumAI
 from config import config
 
 
-Builder.load_file('screens/battlefield.kv')
-
-
 class BattleField(MDScreen):
+    _loaded = BooleanProperty(False)
     allowed_ships = ListProperty([5, 4, 4, 3, 3, 3, 2, 2, 2, 2])
     dimensions = ListProperty((10, 10))
     has_won = BooleanProperty(None, allownone=True)
+
+    def on_pre_enter(self, *args):
+        if not self._loaded:
+            Factory.register('PlayerGrid', module='widgets.grid')
+            Factory.register('EnemyGrid', module='widgets.grid')
+            Builder.load_file('screens/battlefield.kv')
+            Builder.apply(self, dispatch_kv_post=True)
+            self._loaded = True
 
     def _check_player(self, grid, coords):
         # Check if player won
@@ -89,6 +96,7 @@ class MPBattleField(BattleField):
     current_snackbar = ObjectProperty(allownone=True)
 
     def on_pre_enter(self, *args):
+        super().on_pre_enter(*args)
         self.enemy_grid.blocked = True
         self.disabled = True
         self.enemy_grid.bind(last_move=self._set_own_decision)
