@@ -3,10 +3,12 @@ A classic Battleship game, written with Python, Kivy and KivyMD.
 Available for free on the Google Play Store.
 
 
-![alt text](https://github.com/pyfection/BattleShip2/blob/main/img/main_menu.png)
+![Demo](https://github.com/pyfection/BattleShip2/blob/main/demo/demo.mpg)
 
-![alt text](https://github.com/pyfection/BattleShip2/blob/main/img/prepare.png)
+![Main Menu](https://github.com/pyfection/BattleShip2/blob/main/demo/main_menu.png)
 
-![alt text](https://github.com/pyfection/BattleShip2/blob/main/img/ingame.png)
+![Prepare](https://github.com/pyfection/BattleShip2/blob/main/demo/prepare.png)
 
-![alt text](https://github.com/pyfection/BattleShip2/blob/main/img/won.png)
+![Ingame](https://github.com/pyfection/BattleShip2/blob/main/demo/ingame.png)
+
+![Won](https://github.com/pyfection/BattleShip2/blob/main/demo/won.png)
