@@ -144,8 +144,7 @@ class MPBattleField(BattleField):
             print("Waiting for connection...")
             self.connect()
         elif req.resp_headers['status'] == 'connected':
-            # ToDo: set enemy username  # result['username']
-            print("Player", result['username'], "successfully connected!")
+            Snackbar(text=f"Player {result['username']} connected").open()
             w, h = self.dimensions
             bin_ships = list(map(int, bin(int(result['ships']))[2:].zfill(w*h)))
             self.enemy_grid.ships = [[(i % w, i // w)] for i, b in enumerate(bin_ships) if b]
@@ -177,7 +176,7 @@ class MPBattleField(BattleField):
             print("Waiting for turn...")
             self.check_turn()
         elif req.resp_headers['status'] == 'success' and result['has_turn']:
-            print("Now is your turn!", result['has_turn'])
+            Snackbar(text="Now is your turn!").open()
             self.enemy_grid.blocked = False
             self.disabled = False
         else:
