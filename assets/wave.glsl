@@ -36,12 +36,12 @@ float rand(vec2 co){
 }
 
 void main() {
-    //vec2 st = gl_FragCoord.xy/vec2(32, 32).xy;
-    vec2 st = floor(gl_FragCoord.xy/vec2(4, 4).xy);
+    vec2 st = gl_FragCoord.xy/vec2(32, 32).xy;
+    //vec2 st = floor(gl_FragCoord.xy/vec2(4, 4).xy);
 
     vec3 color = vec3(0.);
-    //color = vec3(0.0, 0.48, 0.75) / vec3(abs(sin(time+st.x+sin(st.y)))*.5+.5);
-    color = vec3(0.0, 0.48, 0.75) / vec3((abs(sin(time*rand(st)))*.25+.75));
+    color = vec3(0.0, 0.48, 0.75) / vec3(abs(sin(time+st.x+sin(st.y)))*.5+.5);
+    //color = vec3(0.0, 0.48, 0.75) / vec3((abs(sin(time*rand(st)))*.25+.75));
 
     gl_FragColor = vec4(color,1.0);
 }
