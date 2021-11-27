@@ -142,19 +142,20 @@ class MPBattleField(BattleField):
         if self.transition_state == 'out':
             return
 
+        w, h = self.dimensions
+        bin_hits = list(map(int, bin(int(result['enemy_hits']))[2:].zfill(w * h)))
+        for i, b in enumerate(bin_hits):
+            if not b:
+                continue
+            x, y = (i % w, i // w)
+            self.player_grid.hit_cell((x, y))
+
         if req.resp_headers['status'] == 'waiting':
             sleep(1)
             print("Waiting for turn...")
             self.check_turn()
         elif req.resp_headers['status'] == 'success' and result['has_turn']:
             print("Now is your turn!", result['has_turn'])
-            w, h = self.dimensions
-            bin_hits = list(map(int, bin(int(result['enemy_hits']))[2:].zfill(w * h)))
-            for i, b in enumerate(bin_hits):
-                if not b:
-                    continue
-                x, y = (i % w, i // w)
-                self.player_grid.hit_cell((x, y))
             self.enemy_grid.blocked = False
             self.disabled = False
         else:
