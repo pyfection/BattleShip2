@@ -14,6 +14,9 @@ Factory.register('MPBattleField', module='screens.battlefield')
 
 
 class BattleShip(App):
+    title = "BattleShip"
+    icon = "icon.png"
+
     def start_battle(self, ships, game_type):
         if game_type == 'singleplayer':
             self.root.current = 'sp_battlefield'

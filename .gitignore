@@ -40,4 +40,6 @@ venv.bak/
 .idea
 
 # Project
+.buildozer
+bin
 config.json
