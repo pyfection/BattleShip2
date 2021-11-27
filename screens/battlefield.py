@@ -8,6 +8,8 @@ from kivy.clock import Clock
 from kivy.properties import ListProperty, ObjectProperty, StringProperty, BooleanProperty
 from kivy.network.urlrequest import UrlRequest
 from kivymd.uix.screen import MDScreen
+from kivymd.uix.snackbar import Snackbar
+from kivymd.uix.button import MDFillRoundFlatButton
 
 from ai import MediumAI
 from config import config
@@ -83,12 +85,13 @@ class MPBattleField(BattleField):
     own_decision = ObjectProperty()
     player_id = StringProperty(str(uuid.uuid4()))
     player_name = config.get('PLAYER')['NAME']
+    current_snackbar = ObjectProperty(allownone=True)
 
     def on_pre_enter(self, *args):
         self.enemy_grid.blocked = True
         self.disabled = True
         self.enemy_grid.bind(last_move=self._set_own_decision)
-        Window.bind(on_request_close=lambda *args: self.disconnect())
+        Window.bind(on_request_close=self.disconnect)
 
     def on_leave(self, *args):
         self.disconnect()
@@ -96,12 +99,29 @@ class MPBattleField(BattleField):
     def _set_own_decision(self, player_grid, move):
         self.end_turn(move)
 
-    def disconnect(self):
+    def failure(self, req, result):
+        def to_menu(*args):
+            self.current_snackbar.dismiss()
+            self.current_snackbar = None
+            self.manager.current = 'main'
+
+        btn = MDFillRoundFlatButton(text="Menu", on_press=to_menu)
+        self.current_snackbar = Snackbar(
+            text=f"An error has occured: {result['message']}",
+            font_size='10sp',
+            auto_dismiss=False,
+            buttons=[btn],
+        )
+        self.current_snackbar.open()
+
+    def disconnect(self, *args):
         print("Disconnecting")
         requests.get(
             url=f'{config["MULTIPLAYER_URL"]}/disconnect?userid={self.player_id}'
         )
         print('successful disconnected!')
+        Window.unbind(on_request_close=self.disconnect)
+        self.manager.current = 'main'
 
     def connect(self):
         ships = [s for sublist in self.player_grid.ships for s in sublist]
@@ -112,6 +132,7 @@ class MPBattleField(BattleField):
         UrlRequest(
             url=f'{config["MULTIPLAYER_URL"]}/connect?userid={self.player_id}&username={self.player_name}&ships={ships}',
             on_success=self._connect,
+            on_failure=self.failure,
         )
 
     def _connect(self, req, result):
@@ -136,6 +157,7 @@ class MPBattleField(BattleField):
         UrlRequest(
             url=f'{config["MULTIPLAYER_URL"]}/check-turn?userid={self.player_id}',
             on_success=self._check_turn,
+            on_failure=self.failure,
         )
 
     def _check_turn(self, req, result):
@@ -170,6 +192,7 @@ class MPBattleField(BattleField):
         UrlRequest(
             url=f'{config["MULTIPLAYER_URL"]}/end-turn?userid={self.player_id}&hit={hit}',
             on_success=self._end_turn,
+            on_failure=self.failure,
         )
 
     def _end_turn(self, req, result):
