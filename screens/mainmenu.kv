@@ -1,5 +1,7 @@
+#:import config config.config
+
 <MainMenu>:
-    AnchorLayout:
+    FloatLayout:
         Background:
             size: self.parent.size
             pos: self.parent.pos
@@ -8,21 +10,32 @@
                     pos: self.pos
                     size: self.size
 
-        MDBoxLayout:
-            orientation: "vertical"
-            size_hint_x: .3
-            adaptive_height: True
-            spacing: 10
+        AnchorLayout:
+            MDBoxLayout:
+                orientation: "vertical"
+                size_hint_x: .3
+                adaptive_height: True
+                spacing: 10
 
-            MenuButton:
-                size_hint: 1, None
-                height:
-                text: "Singleplayer"
-                on_press: app.root.current = 'prepare'; app.root.prepare.game_type = 'singleplayer'
+                MenuButton:
+                    size_hint: 1, None
+                    height:
+                    text: "Singleplayer"
+                    on_press: app.root.current = 'prepare'; app.root.prepare.game_type = 'singleplayer'
 
-            MenuButton:
-                text: "Multiplayer"
-                on_press: app.root.current = 'prepare'; app.root.prepare.game_type = 'multiplayer'
+                MenuButton:
+                    text: "Multiplayer"
+                    on_press: app.root.current = 'prepare'; app.root.prepare.game_type = 'multiplayer'
+
+        AnchorLayout:
+            anchor_x: "left"
+            anchor_y: "bottom"
+
+            MDTextFieldRound:
+                id: player_name
+                size_hint_x: 0.3
+                text: config.get("PLAYER")["NAME"]
+                on_focus: if not self.focus: config.put("PLAYER", NAME=self.text)
 
 <MenuButton@RoundButton>:
     size_hint: 1, None

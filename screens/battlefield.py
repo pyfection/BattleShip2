@@ -82,7 +82,7 @@ class MPBattleField(BattleField):
     enemy_decision = ObjectProperty()
     own_decision = ObjectProperty()
     player_id = StringProperty(str(uuid.uuid4()))
-    player_name = config['PLAYERNAME']
+    player_name = config.get('PLAYER')['NAME']
 
     def on_pre_enter(self, *args):
         self.enemy_grid.blocked = True
