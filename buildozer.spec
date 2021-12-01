@@ -36,7 +36,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy,kivymd,pygments,sdl2_ttf==2.0.15,pillow,ffpyplayer,requests,urllib3,chardet,idna
+requirements = python3,kivy,kivymd,pygments,sdl2_ttf==2.0.15,pillow,ffpyplayer,requests,urllib3,chardet,idna,kivmob
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -94,10 +94,10 @@ android.api = 30
 android.minapi = 26
 
 # (int) Android SDK version to use
-#android.sdk = 20
+android.sdk = 24
 
 # (str) Android NDK version to use
-#android.ndk = 19b
+android.ndk = 19b
 
 # (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
 #android.ndk_api = 21
@@ -156,7 +156,7 @@ android.minapi = 26
 
 # (list) Gradle dependencies to add (currently works only with sdl2_gradle
 # bootstrap)
-#android.gradle_dependencies = com.anjlab.android.iab.v3:library:2.0.0
+android.gradle_dependencies = 'com.google.firebase:firebase-ads:10.2.0'
 
 # (list) add java compile options
 # this can for example be necessary when importing certain java libraries using the 'android.gradle_dependencies' option
@@ -204,7 +204,7 @@ android.minapi = 26
 #android.wakelock = False
 
 # (list) Android application meta-data to set (key=value format)
-#android.meta_data = billing_pubkey = ""
+android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-4572994351915717~5230704479
 
 # (list) Android library project to add (will be added in the
 # project.properties automatically.)

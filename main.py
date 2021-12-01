@@ -1,6 +1,8 @@
 from kivymd.app import MDApp as App
+from kivy.logger import Logger
 from kivy.base import EventLoop
 from kivy.factory import Factory
+from kivmob import KivMob, TestIds
 
 
 Factory.register('ShadowLabel', module='widgets.shadowlabel')
@@ -16,13 +18,26 @@ class BattleShip(App):
     title = "BattleShip"
     icon = "icon.png"
 
+    def build(self):
+        self.ads = KivMob("ca-app-pub-4572994351915717~5230704479")
+        self.ads.new_interstitial("ca-app-pub-4572994351915717/4247977059")
+        self.ads.request_interstitial()
+
     def on_start(self):
         EventLoop.window.bind(on_keyboard=self.hook_keyboard)
+
+    def on_resume(self):
+        self.ads.request_interstitial()
 
     def hook_keyboard(self, window, key, *largs):
         if key == 27:  # Escape
             if self.root.current != 'main':
+                if self.root.current in ('sp_battlefield', 'mp_battlefield'):
+                    Logger.info("Show interstitial")
+                    self.ads.show_interstitial()
                 self.root.current = 'main'
+            else:
+                self.stop()
             return True
 
     def start_battle(self, ships, game_type):
