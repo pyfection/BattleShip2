@@ -20,6 +20,16 @@
                 on_blocked:
                     if self.blocked: root.enemy_turn()
 
+            Widget:
+                size_hint: 1, None
+                height: 4
+                canvas:
+                    Color:
+                        rgb: 0, 0, 0
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
             PlayerGrid:
                 id: player_grid
                 allowed_ships: root.allowed_ships

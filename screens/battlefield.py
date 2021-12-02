@@ -33,8 +33,8 @@ class BattleField(MDScreen):
     def _check_player(self, grid, coords):
         # Check if player won
         cell = grid.cells[coords]
-        if cell.is_hit:
-            remaining_ships = len([c for c in grid.cells.values() if c.is_hit])
+        if cell['is_hit']:
+            remaining_ships = len([c for c in grid.cells.values() if c['is_hit']])
             allowed_ships = sum(self.allowed_ships)
             text = str(allowed_ships - remaining_ships)
             grid.info_cell.text = text
@@ -44,8 +44,8 @@ class BattleField(MDScreen):
 
     def _check_enemy(self, grid, coords):
         cell = grid.cells[coords]
-        if cell.is_hit:
-            remaining_ships = len([c for c in grid.cells.values() if c.is_hit])
+        if cell['is_hit']:
+            remaining_ships = len([c for c in grid.cells.values() if c['is_hit']])
             allowed_ships = sum(self.allowed_ships)
             text = str(allowed_ships - remaining_ships)
             grid.info_cell.text = text
@@ -72,7 +72,7 @@ class SPBattleField(BattleField):
     ai = ObjectProperty()
 
     def _enemy_turn(self, *args):
-        successes = [c.coords for c in self.player_grid.cells.values() if c.is_hit]
+        successes = [co for co, c in self.player_grid.cells.items() if c['is_hit']]
         if self.player_grid.hit_cell(self.ai.make_turn(successes)) is True:  # Hit ship
             self.enemy_turn()
         else:
